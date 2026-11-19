@@ -1,3 +1,5 @@
+using LabEquipmentApi.Contracts.Equipment;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,6 +100,20 @@ namespace LabEquipmentApi.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+
+        // GET: api/equipment/available
+        [HttpGet("available")]
+        public async Task<ActionResult<IEnumerable<EquipmentListItemResponse>>> GetAvailableEquipment()
+        {
+            var equipment = await _context.EquipmentItems
+                .Where(e => e.IsAvailable == true)
+                .OrderBy(e => e.Name)
+                .ProjectToType<EquipmentListItemResponse>()
+                .ToListAsync();
+
+            return Ok(equipment);
         }
 
         private bool EquipmentExists(int id)
